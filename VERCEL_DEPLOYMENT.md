@@ -4,25 +4,25 @@ This guide provides step-by-step instructions for deploying the Claim Vault Secu
 
 ## Prerequisites
 
-- Vercel account (free tier available)
 - GitHub account with access to the repository
+- Vercel account (free tier available)
 - Environment variables ready
 
 ## Step-by-Step Deployment
 
-### 1. Access Vercel Dashboard
+### Step 1: Access Vercel Dashboard
 
 1. Go to [vercel.com](https://vercel.com)
 2. Sign in with your GitHub account
 3. Click "New Project" on the dashboard
 
-### 2. Import GitHub Repository
+### Step 2: Import GitHub Repository
 
 1. In the "Import Git Repository" section, search for `chloes93/claim-vault-secure`
 2. Click "Import" next to the repository
-3. Vercel will automatically detect it's a Vite React project
+3. Vercel will automatically detect it's a Vite project
 
-### 3. Configure Project Settings
+### Step 3: Configure Project Settings
 
 1. **Project Name**: `claim-vault-secure` (or your preferred name)
 2. **Framework Preset**: Vite (should be auto-detected)
@@ -31,29 +31,29 @@ This guide provides step-by-step instructions for deploying the Claim Vault Secu
 5. **Output Directory**: `dist` (default)
 6. **Install Command**: `npm install` (default)
 
-### 4. Set Environment Variables
+### Step 4: Set Environment Variables
 
 Click "Environment Variables" and add the following:
 
-```env
+```
 NEXT_PUBLIC_CHAIN_ID=11155111
 NEXT_PUBLIC_RPC_URL=https://sepolia.infura.io/v3/b18fb7e6ca7045ac83c41157ab93f990
 NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID=2ec9743d0d0cd7fb94dee1a7e6d33475
 NEXT_PUBLIC_INFURA_API_KEY=b18fb7e6ca7045ac83c41157ab93f990
 NEXT_PUBLIC_RPC_URL=https://1rpc.io/sepolia
-NEXT_PUBLIC_CONTRACT_ADDRESS=0x0000000000000000000000000000000000000000
-NEXT_PUBLIC_VERIFIER_ADDRESS=0x0000000000000000000000000000000000000000
+NEXT_PUBLIC_CONTRACT_ADDRESS=YOUR_DEPLOYED_CONTRACT_ADDRESS
+NEXT_PUBLIC_VERIFIER_ADDRESS=YOUR_VERIFIER_ADDRESS
 ```
 
-**Important**: Replace the placeholder contract addresses with actual deployed contract addresses when available.
+**Important**: Replace `YOUR_DEPLOYED_CONTRACT_ADDRESS` and `YOUR_VERIFIER_ADDRESS` with actual addresses after contract deployment.
 
-### 5. Deploy
+### Step 5: Deploy
 
 1. Click "Deploy" button
 2. Wait for the build process to complete (usually 2-3 minutes)
 3. Vercel will provide you with a deployment URL
 
-### 6. Custom Domain (Optional)
+### Step 6: Configure Custom Domain (Optional)
 
 1. Go to your project dashboard
 2. Click "Settings" tab
@@ -63,20 +63,17 @@ NEXT_PUBLIC_VERIFIER_ADDRESS=0x0000000000000000000000000000000000000000
 
 ## Post-Deployment Configuration
 
-### 1. Update Contract Addresses
+### Smart Contract Deployment
 
-After deploying your smart contracts to Sepolia testnet:
-
-1. Go to Vercel project settings
-2. Update environment variables with actual contract addresses
+1. Deploy the `ClaimVaultSecure.sol` contract to Sepolia testnet
+2. Update the `NEXT_PUBLIC_CONTRACT_ADDRESS` environment variable
 3. Redeploy the application
 
-### 2. Test the Application
+### Verifier Setup
 
-1. Visit your deployment URL
-2. Connect a Web3 wallet (MetaMask, etc.)
-3. Switch to Sepolia testnet
-4. Test the claim filing functionality
+1. Set up a verifier address for claim validation
+2. Update the `NEXT_PUBLIC_VERIFIER_ADDRESS` environment variable
+3. Redeploy the application
 
 ## Environment Variables Reference
 
@@ -87,68 +84,54 @@ After deploying your smart contracts to Sepolia testnet:
 | `NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID` | WalletConnect project ID | `2ec9743d0d0cd7fb94dee1a7e6d33475` |
 | `NEXT_PUBLIC_INFURA_API_KEY` | Infura API key | `b18fb7e6ca7045ac83c41157ab93f990` |
 | `NEXT_PUBLIC_CONTRACT_ADDRESS` | Deployed contract address | `0x...` |
-| `NEXT_PUBLIC_VERIFIER_ADDRESS` | Verifier contract address | `0x...` |
+| `NEXT_PUBLIC_VERIFIER_ADDRESS` | Verifier wallet address | `0x...` |
+
+## Build Configuration
+
+The project uses the following build settings:
+
+- **Framework**: Vite
+- **Node.js Version**: 18.x
+- **Build Command**: `npm run build`
+- **Output Directory**: `dist`
+- **Install Command**: `npm install`
 
 ## Troubleshooting
 
-### Build Failures
+### Common Issues
 
-1. **Dependency Issues**: Ensure all dependencies are in `package.json`
-2. **Environment Variables**: Check that all required variables are set
-3. **Build Logs**: Check Vercel build logs for specific error messages
+1. **Build Failures**: Check that all dependencies are properly installed
+2. **Environment Variables**: Ensure all required variables are set
+3. **Contract Address**: Verify the contract is deployed and address is correct
+4. **RPC Issues**: Check RPC endpoint is accessible and has sufficient quota
 
-### Runtime Issues
+### Support
 
-1. **Wallet Connection**: Ensure WalletConnect project ID is correct
-2. **Network Issues**: Verify RPC URL is accessible
-3. **Contract Calls**: Check that contract addresses are correct
+For deployment issues:
+1. Check Vercel build logs
+2. Verify environment variables
+3. Ensure all dependencies are compatible
+4. Contact support if issues persist
 
-### Performance Optimization
+## Security Notes
 
-1. **Bundle Size**: Monitor bundle size in Vercel analytics
-2. **Loading Times**: Use Vercel's performance insights
-3. **Caching**: Configure appropriate cache headers
+- Never commit sensitive environment variables to the repository
+- Use Vercel's environment variable system for all secrets
+- Regularly rotate API keys and tokens
+- Monitor deployment logs for any security issues
 
-## Automatic Deployments
+## Performance Optimization
 
-Vercel automatically deploys when you push to the main branch:
+- Enable Vercel's Edge Functions for better performance
+- Use Vercel's CDN for static assets
+- Configure proper caching headers
+- Monitor Core Web Vitals
 
-1. Push changes to GitHub
-2. Vercel detects the push
-3. Automatic deployment starts
-4. New version goes live after successful build
+## Monitoring
 
-## Monitoring and Analytics
+- Set up Vercel Analytics for usage tracking
+- Configure error monitoring
+- Set up uptime monitoring
+- Monitor build performance
 
-1. **Analytics**: Enable Vercel Analytics in project settings
-2. **Logs**: Monitor function logs in Vercel dashboard
-3. **Performance**: Use Vercel's performance monitoring tools
-
-## Security Considerations
-
-1. **Environment Variables**: Never commit sensitive keys to Git
-2. **HTTPS**: Vercel provides HTTPS by default
-3. **CORS**: Configure CORS settings if needed
-4. **Rate Limiting**: Consider implementing rate limiting for API calls
-
-## Support
-
-- Vercel Documentation: [vercel.com/docs](https://vercel.com/docs)
-- Vercel Community: [github.com/vercel/vercel/discussions](https://github.com/vercel/vercel/discussions)
-- Project Issues: [github.com/chloes93/claim-vault-secure/issues](https://github.com/chloes93/claim-vault-secure/issues)
-
-## Deployment Checklist
-
-- [ ] Repository imported to Vercel
-- [ ] Environment variables configured
-- [ ] Build settings verified
-- [ ] Initial deployment successful
-- [ ] Custom domain configured (if applicable)
-- [ ] Contract addresses updated
-- [ ] Application tested end-to-end
-- [ ] Analytics enabled
-- [ ] Monitoring configured
-
----
-
-**Note**: This deployment guide assumes you have already deployed your smart contracts to the Sepolia testnet. If you haven't done so, you'll need to deploy the contracts first and then update the environment variables with the actual contract addresses.
+This completes the Vercel deployment setup for Claim Vault Secure.
