@@ -12,8 +12,7 @@ const Hero = () => {
       <div className="container mx-auto px-6 text-center relative z-10">
         <div className="flex justify-center mb-8">
           <div className="relative">
-            <Shield className="h-16 w-16 text-white" />
-            <Lock className="h-6 w-6 text-security-light absolute -top-1 -right-1" />
+            <img src="/logo.svg" alt="Claim Vault Secure Logo" className="h-16 w-16" />
           </div>
         </div>
         

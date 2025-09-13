@@ -1,10 +1,10 @@
 # Claim Vault Secure
 
-A secure, privacy-preserving insurance claims platform built with FHE (Fully Homomorphic Encryption) technology. This platform enables users to file insurance claims while maintaining complete privacy of sensitive data through encrypted processing.
+A secure, privacy-preserving insurance claims platform built with modern Web3 technology. This platform enables users to file insurance claims while maintaining security and transparency through blockchain technology.
 
 ## Features
 
-- **FHE-Encrypted Claims**: All sensitive claim data is encrypted using Fully Homomorphic Encryption
+- **Secure Claims**: All claim data is securely stored and processed on the blockchain
 - **Wallet Integration**: Seamless connection with popular Web3 wallets via RainbowKit
 - **Privacy-First Design**: Zero-knowledge proof system for claim verification
 - **Multi-Chain Support**: Built for Ethereum Sepolia testnet
@@ -17,8 +17,7 @@ A secure, privacy-preserving insurance claims platform built with FHE (Fully Hom
 - **UI Framework**: shadcn/ui, Tailwind CSS
 - **Web3 Integration**: RainbowKit, Wagmi, Viem
 - **Blockchain**: Ethereum Sepolia
-- **Encryption**: FHE (Fully Homomorphic Encryption)
-- **Smart Contracts**: Solidity with FHEVM
+- **Smart Contracts**: Solidity for Ethereum
 
 ## Getting Started
 
@@ -73,18 +72,18 @@ NEXT_PUBLIC_VERIFIER_ADDRESS=YOUR_VERIFIER_ADDRESS
 
 ## Smart Contract
 
-The platform uses a custom FHE-enabled smart contract (`ClaimVaultSecure.sol`) that:
+The platform uses a custom smart contract (`ClaimVaultSecure.sol`) that:
 
-- Encrypts all sensitive claim data using FHE
-- Maintains privacy while enabling verification
+- Securely stores all claim data on the blockchain
+- Maintains transparency while enabling verification
 - Supports multiple claim types (Auto, Health, Property, Life)
 - Implements reputation systems for users and insurers
 - Provides secure fund processing
 
 ## Security Features
 
-- **End-to-End Encryption**: All data encrypted with FHE
-- **Zero-Knowledge Proofs**: Verify claims without revealing data
+- **Blockchain Security**: All data secured on the blockchain
+- **Transparent Verification**: Verify claims with full audit trails
 - **Decentralized Verification**: Multiple verifiers for claim validation
 - **Reputation System**: Trust scoring for all participants
 - **Secure Fund Processing**: Encrypted transaction handling

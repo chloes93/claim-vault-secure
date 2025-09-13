@@ -1,18 +1,14 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
-import { SepoliaConfig } from "@fhevm/solidity/config/ZamaConfig.sol";
-import { euint32, externalEuint32, euint8, ebool, FHE } from "@fhevm/solidity/lib/FHE.sol";
-
-contract ClaimVaultSecure is SepoliaConfig {
-    using FHE for *;
+contract ClaimVaultSecure {
     
     struct InsuranceClaim {
-        euint32 claimId;
-        euint32 claimAmount;
-        euint32 policyNumber;
-        euint8 claimStatus; // 0: Pending, 1: Approved, 2: Rejected, 3: Under Review
-        euint8 claimType; // 0: Auto, 1: Health, 2: Property, 3: Life
+        uint256 claimId;
+        uint256 claimAmount;
+        uint256 policyNumber;
+        uint8 claimStatus; // 0: Pending, 1: Approved, 2: Rejected, 3: Under Review
+        uint8 claimType; // 0: Auto, 1: Health, 2: Property, 3: Life
         bool isActive;
         bool isVerified;
         string description;
@@ -24,10 +20,10 @@ contract ClaimVaultSecure is SepoliaConfig {
     }
     
     struct Policy {
-        euint32 policyId;
-        euint32 coverageAmount;
-        euint32 premiumAmount;
-        euint8 policyType;
+        uint256 policyId;
+        uint256 coverageAmount;
+        uint256 premiumAmount;
+        uint8 policyType;
         bool isActive;
         bool isVerified;
         string policyDetails;
@@ -38,10 +34,10 @@ contract ClaimVaultSecure is SepoliaConfig {
     }
     
     struct VerificationReport {
-        euint32 reportId;
-        euint32 claimId;
-        euint8 verificationScore;
-        ebool isLegitimate;
+        uint256 reportId;
+        uint256 claimId;
+        uint8 verificationScore;
+        bool isLegitimate;
         string reportHash;
         address verifier;
         uint256 timestamp;
@@ -50,8 +46,8 @@ contract ClaimVaultSecure is SepoliaConfig {
     mapping(uint256 => InsuranceClaim) public claims;
     mapping(uint256 => Policy) public policies;
     mapping(uint256 => VerificationReport) public verificationReports;
-    mapping(address => euint32) public userReputation;
-    mapping(address => euint32) public insurerReputation;
+    mapping(address => uint256) public userReputation;
+    mapping(address => uint256) public insurerReputation;
     
     uint256 public claimCounter;
     uint256 public policyCounter;
@@ -64,7 +60,7 @@ contract ClaimVaultSecure is SepoliaConfig {
     event ClaimReviewed(uint256 indexed claimId, uint8 status, address indexed reviewer);
     event PolicyCreated(uint256 indexed policyId, address indexed policyholder, address indexed insurer);
     event VerificationSubmitted(uint256 indexed reportId, uint256 indexed claimId, address indexed verifier);
-    event ReputationUpdated(address indexed user, uint32 reputation);
+    event ReputationUpdated(address indexed user, uint256 reputation);
     
     constructor(address _verifier) {
         owner = msg.sender;
@@ -84,10 +80,10 @@ contract ClaimVaultSecure is SepoliaConfig {
         uint256 policyId = policyCounter++;
         
         policies[policyId] = Policy({
-            policyId: FHE.asEuint32(0), // Will be set properly later
-            coverageAmount: FHE.asEuint32(0), // Will be set to actual value via FHE operations
-            premiumAmount: FHE.asEuint32(0), // Will be set to actual value via FHE operations
-            policyType: FHE.asEuint8(_policyType),
+            policyId: policyId,
+            coverageAmount: _coverageAmount,
+            premiumAmount: _premiumAmount,
+            policyType: _policyType,
             isActive: true,
             isVerified: false,
             policyDetails: _policyDetails,
@@ -105,8 +101,7 @@ contract ClaimVaultSecure is SepoliaConfig {
         uint256 policyId,
         string memory _description,
         string memory _evidenceHash,
-        externalEuint32 claimAmount,
-        bytes calldata inputProof
+        uint256 claimAmount
     ) public returns (uint256) {
         require(policies[policyId].policyholder != address(0), "Policy does not exist");
         require(policies[policyId].isActive, "Policy is not active");
@@ -114,14 +109,11 @@ contract ClaimVaultSecure is SepoliaConfig {
         
         uint256 claimId = claimCounter++;
         
-        // Convert externalEuint32 to euint32 using FHE.fromExternal
-        euint32 internalAmount = FHE.fromExternal(claimAmount, inputProof);
-        
         claims[claimId] = InsuranceClaim({
-            claimId: FHE.asEuint32(0), // Will be set properly later
-            claimAmount: internalAmount,
-            policyNumber: FHE.asEuint32(0), // Will be set to policyId
-            claimStatus: FHE.asEuint8(0), // Pending
+            claimId: claimId,
+            claimAmount: claimAmount,
+            policyNumber: policyId,
+            claimStatus: 0, // Pending
             claimType: policies[policyId].policyType,
             isActive: true,
             isVerified: false,
@@ -146,7 +138,7 @@ contract ClaimVaultSecure is SepoliaConfig {
         require(claims[claimId].isActive, "Claim is not active");
         require(block.timestamp <= claims[claimId].reviewDeadline, "Review deadline passed");
         
-        claims[claimId].claimStatus = FHE.asEuint8(status);
+        claims[claimId].claimStatus = status;
         
         if (status == 1) { // Approved
             claims[claimId].isVerified = true;
@@ -159,8 +151,8 @@ contract ClaimVaultSecure is SepoliaConfig {
     
     function submitVerificationReport(
         uint256 claimId,
-        euint8 verificationScore,
-        ebool isLegitimate,
+        uint8 verificationScore,
+        bool isLegitimate,
         string memory reportHash
     ) public returns (uint256) {
         require(claims[claimId].claimant != address(0), "Claim does not exist");
@@ -169,8 +161,8 @@ contract ClaimVaultSecure is SepoliaConfig {
         uint256 reportId = reportCounter++;
         
         verificationReports[reportId] = VerificationReport({
-            reportId: FHE.asEuint32(0), // Will be set properly later
-            claimId: FHE.asEuint32(0), // Will be set to claimId
+            reportId: reportId,
+            claimId: claimId,
             verificationScore: verificationScore,
             isLegitimate: isLegitimate,
             reportHash: reportHash,
@@ -182,18 +174,18 @@ contract ClaimVaultSecure is SepoliaConfig {
         return reportId;
     }
     
-    function updateReputation(address user, euint32 reputation) public {
+    function updateReputation(address user, uint256 reputation) public {
         require(msg.sender == verifier, "Only verifier can update reputation");
         require(user != address(0), "Invalid user address");
         
         // Determine if user is claimant or insurer based on context
-        if (claims[claimCounter - 1].claimant == user) {
+        if (claimCounter > 0 && claims[claimCounter - 1].claimant == user) {
             userReputation[user] = reputation;
         } else {
             insurerReputation[user] = reputation;
         }
         
-        emit ReputationUpdated(user, 0); // FHE.decrypt(reputation) - will be decrypted off-chain
+        emit ReputationUpdated(user, reputation);
     }
     
     function getClaimInfo(uint256 claimId) public view returns (
@@ -212,8 +204,8 @@ contract ClaimVaultSecure is SepoliaConfig {
         return (
             claim.description,
             claim.evidenceHash,
-            0, // FHE.decrypt(claim.claimStatus) - will be decrypted off-chain
-            0, // FHE.decrypt(claim.claimType) - will be decrypted off-chain
+            claim.claimStatus,
+            claim.claimType,
             claim.isActive,
             claim.isVerified,
             claim.claimant,
@@ -236,7 +228,7 @@ contract ClaimVaultSecure is SepoliaConfig {
         Policy storage policy = policies[policyId];
         return (
             policy.policyDetails,
-            0, // FHE.decrypt(policy.policyType) - will be decrypted off-chain
+            policy.policyType,
             policy.isActive,
             policy.isVerified,
             policy.policyholder,
@@ -255,42 +247,42 @@ contract ClaimVaultSecure is SepoliaConfig {
     ) {
         VerificationReport storage report = verificationReports[reportId];
         return (
-            0, // FHE.decrypt(report.verificationScore) - will be decrypted off-chain
-            false, // FHE.decrypt(report.isLegitimate) - will be decrypted off-chain
+            report.verificationScore,
+            report.isLegitimate,
             report.reportHash,
             report.verifier,
             report.timestamp
         );
     }
     
-    function getUserReputation(address user) public view returns (uint8) {
-        return 0; // FHE.decrypt(userReputation[user]) - will be decrypted off-chain
+    function getUserReputation(address user) public view returns (uint256) {
+        return userReputation[user];
     }
     
-    function getInsurerReputation(address insurer) public view returns (uint8) {
-        return 0; // FHE.decrypt(insurerReputation[insurer]) - will be decrypted off-chain
+    function getInsurerReputation(address insurer) public view returns (uint256) {
+        return insurerReputation[insurer];
     }
     
     function processClaim(uint256 claimId) public {
         require(claims[claimId].insurer == msg.sender, "Only insurer can process claim");
         require(claims[claimId].isVerified, "Claim must be verified");
-        require(claims[claimId].claimStatus == FHE.asEuint8(1), "Claim must be approved");
+        require(claims[claimId].claimStatus == 1, "Claim must be approved");
         
         // Mark claim as processed
         claims[claimId].isActive = false;
         
-        // In a real implementation, funds would be transferred based on decrypted amount
-        // payable(claims[claimId].claimant).transfer(amount);
+        // In a real implementation, funds would be transferred based on amount
+        // payable(claims[claimId].claimant).transfer(claims[claimId].claimAmount);
     }
     
     function withdrawFunds(uint256 claimId) public {
         require(claims[claimId].claimant == msg.sender, "Only claimant can withdraw");
         require(claims[claimId].isVerified, "Claim must be verified");
-        require(claims[claimId].claimStatus == FHE.asEuint8(1), "Claim must be approved");
+        require(claims[claimId].claimStatus == 1, "Claim must be approved");
         require(!claims[claimId].isActive, "Claim must be processed");
         
         // Transfer funds to claimant
-        // Note: In a real implementation, funds would be transferred based on decrypted amount
-        // payable(msg.sender).transfer(amount);
+        // Note: In a real implementation, funds would be transferred based on amount
+        // payable(msg.sender).transfer(claims[claimId].claimAmount);
     }
 }
